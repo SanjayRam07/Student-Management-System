@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="images"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/app/sanjay/product/21c/dbhomeXE/jdbc/lib/ojdbc8.jar"/>
+	<classpathentry kind="lib" path="C:/app/sanjay/product/21c/dbhomeXE/jdbc/lib/ojdbc8_g.jar"/>
+	<classpathentry kind="lib" path="C:/app/sanjay/product/21c/dbhomeXE/jdbc/lib/ojdbc8dms.jar"/>
+	<classpathentry kind="lib" path="C:/app/sanjay/product/21c/dbhomeXE/jdbc/lib/ojdbc8dms_g.jar"/>
+	<classpathentry kind="lib" path="C:/app/sanjay/product/21c/dbhomeXE/jdbc/lib/ojdbc11.jar"/>
+	<classpathentry kind="lib" path="C:/app/sanjay/product/21c/dbhomeXE/jdbc/lib/ojdbc11_g.jar"/>
+	<classpathentry kind="lib" path="C:/app/sanjay/product/21c/dbhomeXE/jdbc/lib/ojdbc11dms.jar"/>
+	<classpathentry kind="lib" path="C:/app/sanjay/product/21c/dbhomeXE/jdbc/lib/ojdbc11dms_g.jar"/>
+	<classpathentry kind="lib" path="C:/app/sanjay/product/21c/dbhomeXE/jdbc/lib/rsi.jar"/>
+	<classpathentry kind="lib" path="C:/app/sanjay/product/21c/dbhomeXE/jdbc/lib/simplefan.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
