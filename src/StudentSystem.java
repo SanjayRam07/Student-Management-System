@@ -17,7 +17,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 	Statement st;
 
 	JPanel backPanel, beginPanel, loginPanel, adminPanel, studentPanel;
-	JButton back,logout;
+	JButton back, logout;
 	JLabel adminLabel, studentLabel;
 	JButton admin, student;
 	JLabel userLabel, pwdLabel, cpwdLabel, pwdMatch;
@@ -38,7 +38,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 	int height = (int) size.getHeight();
 	int totalNoStu;
 	int rollNoVal;
-	String  nameVal, classVal, sectionVal, phoneVal, addressVal;
+	String nameVal, classVal, sectionVal, phoneVal, addressVal;
 
 	BackListener backListener;
 	AdminListener adminListener;
@@ -67,11 +67,11 @@ public class StudentSystem extends JFrame implements ActionListener {
 		back.setVisible(false);
 		back.setBounds(5, 5, 100, 30);
 		backPanel.add(back);
-		
+
 		logout = new JButton("logout");
 		logout.addActionListener(backListener);
 		logout.setVisible(false);
-		logout.setBounds(width-105, 5, 100, 30);
+		logout.setBounds(width - 105, 5, 100, 30);
 		backPanel.add(logout);
 
 		backPanel.setLayout(null);
@@ -327,15 +327,13 @@ public class StudentSystem extends JFrame implements ActionListener {
 		off.setVisible(false);
 		on.setVisible(true);
 		backListener.updateCurrentPanel(on);
-		if(on==loginPanel) {
+		if (on == loginPanel) {
 			back.setVisible(true);
 			logout.setVisible(false);
-		}
-		else if(on==adminPanel || on==studentPanel) {
+		} else if (on == adminPanel || on == studentPanel) {
 			back.setVisible(false);
 			logout.setVisible(true);
-		}
-		else {
+		} else {
 			back.setVisible(false);
 			logout.setVisible(false);
 		}
@@ -346,12 +344,11 @@ public class StudentSystem extends JFrame implements ActionListener {
 			ResultSet rs = st.executeQuery("select count(*) from student");
 			while (rs.next())
 				totalNoStu = Integer.parseInt(rs.getString(1)) + 1;
-			System.out.println(totalNoStu);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void clearFields() {
 		// TODO Auto-generated method stub
 		rollNoTF.setText("");
@@ -468,7 +465,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 			// TODO Auto-generated method stub
 			String s = e.getActionCommand();
 			Object o = e.getSource();
-			
+
 			calcTotalNoStu();
 
 			try {
@@ -477,13 +474,14 @@ public class StudentSystem extends JFrame implements ActionListener {
 					rollNoTF.setText(Integer.toString(totalNoStu));
 				}
 				if (o == addStudent) {
-					rollNoVal=Integer.parseInt(rollNoTF.getText().trim());
-					nameVal=nameTF.getText().trim();
-					classVal=classTF.getText().trim();
-					sectionVal=sectionTF.getText().trim();
-					phoneVal=phoneTF.getText().trim();
-					addressVal=addressTF.getText().trim();
-					String q=String.format("insert into student values (%d,'%s','%s','%s','%s','%s')", rollNoVal,nameVal,classVal,sectionVal,phoneVal,addressVal);
+					rollNoVal = Integer.parseInt(rollNoTF.getText().trim());
+					nameVal = nameTF.getText().trim();
+					classVal = classTF.getText().trim();
+					sectionVal = sectionTF.getText().trim();
+					phoneVal = phoneTF.getText().trim();
+					addressVal = addressTF.getText().trim();
+					String q = String.format("insert into student values (%d,'%s','%s','%s','%s','%s')", rollNoVal,
+							nameVal, classVal, sectionVal, phoneVal, addressVal);
 					ResultSet rs = st.executeQuery(q);
 					clearFields();
 					showAllModel.setRowCount(0);
@@ -493,11 +491,37 @@ public class StudentSystem extends JFrame implements ActionListener {
 					sCreatePanel.setVisible(false);
 					clearFields();
 				}
+				if (o == sReadBtn || o == sUpdateBtn || o == sDeleteBtn) {
+					showAllTable.addMouseListener(new MouseAdapter() {
+						@Override
+						public void mouseReleased(final MouseEvent e) {
+							final JTable target = (JTable) e.getSource();
+							final int row = target.getSelectedRow();
+							final int column = target.getSelectedColumn();
+							work(o,row,column);
+						}
+					});
+				}
+				if (o == logout) {
+					cancel.doClick();
+					adminPanel.setVisible(false);
+					beginPanel.setVisible(true);
+				}
 			} catch (Exception e2) {
 				e2.printStackTrace();
 			}
 		}
+		private void work(Object o,int row,int column) {
+			if (o == sReadBtn) {
+				System.out.println(showAllTable.getValueAt(row, column));
+			}
+			if (o == sUpdateBtn) {
 
+			}
+			if (o == sDeleteBtn) {
+
+			}
+		}
 	}
 
 }
