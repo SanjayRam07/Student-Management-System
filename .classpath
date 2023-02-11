@@ -2,16 +2,13 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="images"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/app/sanjay/product/21c/dbhomeXE/jdbc/lib/ojdbc8.jar"/>
-	<classpathentry kind="lib" path="C:/app/sanjay/product/21c/dbhomeXE/jdbc/lib/ojdbc8_g.jar"/>
-	<classpathentry kind="lib" path="C:/app/sanjay/product/21c/dbhomeXE/jdbc/lib/ojdbc8dms.jar"/>
-	<classpathentry kind="lib" path="C:/app/sanjay/product/21c/dbhomeXE/jdbc/lib/ojdbc8dms_g.jar"/>
-	<classpathentry kind="lib" path="C:/app/sanjay/product/21c/dbhomeXE/jdbc/lib/ojdbc11.jar"/>
-	<classpathentry kind="lib" path="C:/app/sanjay/product/21c/dbhomeXE/jdbc/lib/ojdbc11_g.jar"/>
-	<classpathentry kind="lib" path="C:/app/sanjay/product/21c/dbhomeXE/jdbc/lib/ojdbc11dms.jar"/>
-	<classpathentry kind="lib" path="C:/app/sanjay/product/21c/dbhomeXE/jdbc/lib/ojdbc11dms_g.jar"/>
-	<classpathentry kind="lib" path="C:/app/sanjay/product/21c/dbhomeXE/jdbc/lib/rsi.jar"/>
-	<classpathentry kind="lib" path="C:/app/sanjay/product/21c/dbhomeXE/jdbc/lib/simplefan.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="C:/oraclexe/app/oracle/product/11.2.0/server/jdbc/lib/ojdbc6.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/oraclexe/app/oracle/product/11.2.0/server/jdbc/lib/ojdbc5.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/oraclexe/app/oracle/product/11.2.0/server/jdbc/lib/ojdbc6_g.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
