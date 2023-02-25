@@ -19,6 +19,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 
 	JPanel backPanel, beginPanel, loginPanel, adminPanel, studentPanel;
 	JButton back, logout;
+	JPanel currentPanel, newPanel;
 	JLabel adminLabel, studentLabel;
 	JButton admin, student;
 	JLabel userLabel,pwdLabel, cpwdLabel, pwdMatch;
@@ -34,6 +35,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 	JButton stuBioBtn, attendanceBtn, timetableBtn, marksBtn, feeBtn;
 	JPanel stuBioPanel, attendancePanel, timetablePanel, marksPanel, feePanel;
 	
+	ImageIcon sImgIcon; 
 	JLabel sImg,sRollNoLabel,sNameLabel,sClassLabel,sSectionLabel,sPhoneLabel,sAddressLabel;
 	JTextField sRollNoTF,sNameTF,sClassTF,sSectionTF,sPhoneTF;
 	JTextArea sAddressTA;
@@ -333,6 +335,8 @@ public class StudentSystem extends JFrame implements ActionListener {
 		// stuBio panel
 		stuBioPanel=new JPanel();
 		
+		sImgIcon=new ImageIcon("C:\\Users\\sanja\\OneDrive\\Pictures\\Screenshots\\wallpaper.jpg");
+		sImg=new JLabel(sImgIcon);
 		sRollNoLabel=new JLabel("Roll No :");
 		sNameLabel=new JLabel("Name :");
 		sClassLabel=new JLabel("Class");
@@ -345,11 +349,29 @@ public class StudentSystem extends JFrame implements ActionListener {
 		sSectionTF=new JTextField(20);
 		sPhoneTF=new JTextField(20);
 		sAddressTA=new JTextArea();
-		
+
+		sImg.setBounds(850,50,100,125);
 		sRollNoLabel.setBounds(50,50,100,25);
 		sRollNoTF.setBounds(200,50,200,25);
+		sNameLabel.setBounds(50,100,100,25);
+		sNameTF.setBounds(200,100,200,25);
+		sClassLabel.setBounds(50,150,100,25);
+		sClassTF.setBounds(200,150,200,25);
+		sSectionLabel.setBounds(50,200,100,25);
+		sSectionTF.setBounds(200,200,200,25);
+		sPhoneLabel.setBounds(50,250,100,25);
+		sPhoneTF.setBounds(200,250,200,25);
+		sAddressLabel.setBounds(50,300,100,25);
+		sAddressTA.setBounds(200,300,200,100);
 		
+		sRollNoTF.setEditable(false);
+		sNameTF.setEditable(false);
+		sClassTF.setEditable(false);
+		sSectionTF.setEditable(false);
+		sPhoneTF.setEditable(false);
+		sAddressTA.setEditable(false);
 		
+		stuBioPanel.add(sImg);
 		stuBioPanel.add(sRollNoLabel);
 		stuBioPanel.add(sNameLabel);
 		stuBioPanel.add(sClassLabel);
@@ -587,15 +609,14 @@ public class StudentSystem extends JFrame implements ActionListener {
 
 	class BackListener implements ActionListener {
 
-		JPanel currentPanel, newPanel;
 		HashMap<JPanel, JPanel> backMap = new HashMap<>();
 
 		public void load() {
 			backMap.put(loginPanel, beginPanel);
 		}
 
-		public JPanel updateCurrentPanel(JPanel currentPanel) {
-			this.currentPanel = currentPanel;
+		public JPanel updateCurrentPanel(JPanel currPanel) {
+			currentPanel = currPanel;
 			return currentPanel;
 		}
 
@@ -760,12 +781,13 @@ public class StudentSystem extends JFrame implements ActionListener {
 			
 			if(o==stuBioBtn) {
 				stuBioPanel.setVisible(true);
+				backListener.updateCurrentPanel(stuBioPanel);
 			}
 			if(o==attendanceBtn) {
-				attendancePanel.setVisible(true);
+				setVisibility(currentPanel,attendancePanel);
 			}
 			if(o==timetableBtn) {
-				timetablePanel.setVisible(true);
+				timetablePanel
 			}
 			if(o==marksBtn) {
 				marksPanel.setVisible(true);
