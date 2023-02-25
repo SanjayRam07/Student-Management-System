@@ -3,6 +3,7 @@ import java.sql.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
@@ -20,8 +21,9 @@ public class StudentSystem extends JFrame implements ActionListener {
 	JButton back, logout;
 	JLabel adminLabel, studentLabel;
 	JButton admin, student;
-	JLabel userLabel, pwdLabel, cpwdLabel, pwdMatch;
-	JTextField userTF, pwdTF, cpwdTF;
+	JLabel userLabel,pwdLabel, cpwdLabel, pwdMatch;
+	JTextField userTF; 
+	JPasswordField pwdTF, cpwdTF;
 	JButton login, signup;
 	JPanel sCreatePanel;
 	JButton sCreateBtn, sReadBtn, sUpdateBtn, sDeleteBtn;
@@ -29,6 +31,12 @@ public class StudentSystem extends JFrame implements ActionListener {
 	JTextField rollNoTF, nameTF, classTF, sectionTF, phoneTF;
 	JTextArea addressTA;
 	JButton addStudent, cancel;
+	JButton stuBioBtn, attendanceBtn, timetableBtn, marksBtn, feeBtn;
+	JPanel stuBioPanel, attendancePanel, timetablePanel, marksPanel, feePanel;
+	
+	JLabel sImg,sRollNoLabel,sNameLabel,sClassLabel,sSectionLabel,sPhoneLabel,sAddressLabel;
+	JTextField sRollNoTF,sNameTF,sClassTF,sSectionTF,sPhoneTF;
+	JTextArea sAddressTA;
 
 	DefaultTableModel showAllModel;
 	JTable showAllTable;
@@ -40,9 +48,11 @@ public class StudentSystem extends JFrame implements ActionListener {
 	int totalNoStu = 1;
 	int rollNoVal;
 	String nameVal, classVal, sectionVal, phoneVal, addressVal;
+	int row, col;
 
 	BackListener backListener;
 	AdminListener adminListener;
+	StudentListener studentListener;
 
 	int currentUser;
 
@@ -59,6 +69,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 
 		backListener = new BackListener();
 		adminListener = new AdminListener();
+		studentListener = new StudentListener();
 
 		// back panel
 		backPanel = new JPanel();
@@ -123,8 +134,8 @@ public class StudentSystem extends JFrame implements ActionListener {
 		cpwdLabel = new JLabel("Confirm Password");
 		pwdMatch = new JLabel("");
 		userTF = new JTextField(20);
-		pwdTF = new JTextField(20);
-		cpwdTF = new JTextField(20);
+		pwdTF = new JPasswordField(20);
+		cpwdTF = new JPasswordField(20);
 		login = new JButton("Login");
 		signup = new JButton("Signup");
 
@@ -201,6 +212,15 @@ public class StudentSystem extends JFrame implements ActionListener {
 		showAllModel.addColumn("Name");
 		showAllTable = new JTable(showAllModel);
 		showAllSP = new JScrollPane(showAllTable);
+		showAllTable.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(final MouseEvent e) {
+				final JTable target = (JTable) e.getSource();
+				final int row = target.getSelectedRow();
+				final int column = target.getSelectedColumn();
+				updateRowCol(row, column);
+			}
+		});
 
 		sCreateBtn.addActionListener(adminListener);
 		sReadBtn.addActionListener(adminListener);
@@ -284,6 +304,107 @@ public class StudentSystem extends JFrame implements ActionListener {
 		// student panel
 		studentPanel = new JPanel();
 
+		stuBioBtn = new JButton("Bio");
+		attendanceBtn = new JButton("Attendance");
+		timetableBtn = new JButton("TimeTable");
+		marksBtn = new JButton("Marks");
+		feeBtn = new JButton("Fee");
+		
+		Border studentBorder=BorderFactory.createLineBorder(Color.BLACK);
+
+		stuBioBtn.addActionListener(studentListener);
+		attendanceBtn.addActionListener(studentListener);
+		timetableBtn.addActionListener(studentListener);
+		marksBtn.addActionListener(studentListener);
+		feeBtn.addActionListener(studentListener);
+		
+		stuBioBtn.setBounds(50,100,300,100);
+		attendanceBtn.setBounds(50,200,300,100);
+		timetableBtn.setBounds(50,300,300,100);
+		marksBtn.setBounds(50,400,300,100);
+		feeBtn.setBounds(50,500,300,100);
+		
+		studentPanel.add(stuBioBtn);
+		studentPanel.add(attendanceBtn);
+		studentPanel.add(timetableBtn);
+		studentPanel.add(marksBtn);
+		studentPanel.add(feeBtn);
+		
+		// stuBio panel
+		stuBioPanel=new JPanel();
+		
+		sRollNoLabel=new JLabel("Roll No :");
+		sNameLabel=new JLabel("Name :");
+		sClassLabel=new JLabel("Class");
+		sSectionLabel=new JLabel("Section");
+		sPhoneLabel=new JLabel("Phone");
+		sAddressLabel=new JLabel("Address");
+		sRollNoTF=new JTextField(20);
+		sNameTF=new JTextField(20);
+		sClassTF=new JTextField(20);
+		sSectionTF=new JTextField(20);
+		sPhoneTF=new JTextField(20);
+		sAddressTA=new JTextArea();
+		
+		sRollNoLabel.setBounds(50,50,100,25);
+		sRollNoTF.setBounds(200,50,200,25);
+		
+		
+		stuBioPanel.add(sRollNoLabel);
+		stuBioPanel.add(sNameLabel);
+		stuBioPanel.add(sClassLabel);
+		stuBioPanel.add(sSectionLabel);
+		stuBioPanel.add(sPhoneLabel);
+		stuBioPanel.add(sAddressLabel);
+		stuBioPanel.add(sRollNoTF);
+		stuBioPanel.add(sNameTF);
+		stuBioPanel.add(sClassTF);
+		stuBioPanel.add(sSectionTF);
+		stuBioPanel.add(sPhoneTF);
+		stuBioPanel.add(sAddressTA);
+		
+		stuBioPanel.setBorder(studentBorder);
+		stuBioPanel.setLayout(null);
+		stuBioPanel.setBounds(500,100,width-500-50,600);
+		stuBioPanel.setVisible(true);
+		studentPanel.add(stuBioPanel);
+		
+		// attendance panel
+		attendancePanel=new JPanel();
+		
+		attendancePanel.setBorder(studentBorder);
+		attendancePanel.setLayout(null);
+		attendancePanel.setBounds(500,100,width-500-50,600);
+		attendancePanel.setVisible(false);
+		studentPanel.add(attendancePanel);
+		
+		// timetable panel
+		timetablePanel=new JPanel();
+		
+		timetablePanel.setBorder(studentBorder);
+		timetablePanel.setLayout(null);
+		timetablePanel.setBounds(500,100,width-500-50,600);
+		timetablePanel.setVisible(false);
+		studentPanel.add(timetablePanel);
+		
+		// marks panel
+		marksPanel=new JPanel();
+		
+		marksPanel.setBorder(studentBorder);
+		marksPanel.setLayout(null);
+		marksPanel.setBounds(500,100,width-500-50,600);
+		marksPanel.setVisible(false);
+		studentPanel.add(marksPanel);
+		
+		//fee panel
+		feePanel=new JPanel();
+		
+		feePanel.setBorder(studentBorder);
+		feePanel.setLayout(null);
+		feePanel.setBounds(500,100,width-500-50,600);
+		feePanel.setVisible(false);
+		studentPanel.add(feePanel);
+
 		studentPanel.setLayout(null);
 		studentPanel.setSize(width, height);
 		studentPanel.setVisible(false);
@@ -318,6 +439,11 @@ public class StudentSystem extends JFrame implements ActionListener {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void updateRowCol(int row, int column) {
+		this.row = row;
+		this.col = column;
 	}
 
 	private void setVisibility(JPanel off, JPanel on) {
@@ -377,12 +503,14 @@ public class StudentSystem extends JFrame implements ActionListener {
 			cpwdTF.setVisible(true);
 			login.setText("Signup");
 			signup.setText("Login");
+			clearLogin();
 		}
 		if (o == signup && s.equals("Login")) {
 			cpwdLabel.setVisible(false);
 			cpwdTF.setVisible(false);
 			login.setText("Login");
 			signup.setText("Signup");
+			clearLogin();
 		}
 
 		if (o == login && s.equals("Login")) { // t-adminlogin,studentlogin
@@ -403,7 +531,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 					ResultSet rs = st.executeQuery(
 							"select password from studentlogin where username='" + userTF.getText().trim() + "'");
 					if (rs.next()) {
-						if (rs.getString(1).equals(pwdTF.getText().trim())) {
+						if (rs.getString("password").equals(pwdTF.getText().trim())) {
 							this.setVisibility(loginPanel, studentPanel);
 						}
 					} else {
@@ -411,6 +539,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 						clearLogin();
 					}
 				}
+				clearLogin();
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -434,6 +563,8 @@ public class StudentSystem extends JFrame implements ActionListener {
 				pwdTF.setText("");
 				login.setText("Login");
 				signup.setText("Signup");
+				pwdMatch.setVisible(false);
+				clearLogin();
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -443,6 +574,15 @@ public class StudentSystem extends JFrame implements ActionListener {
 	private void clearLogin() {
 		userTF.setText("");
 		pwdTF.setText("");
+		cpwdTF.setText("");
+	}
+
+	private void setFieldVisibility(boolean b) {
+		nameTF.setEditable(b);
+		classTF.setEditable(b);
+		sectionTF.setEditable(b);
+		phoneTF.setEditable(b);
+		addressTA.setEditable(b);
 	}
 
 	class BackListener implements ActionListener {
@@ -469,8 +609,6 @@ public class StudentSystem extends JFrame implements ActionListener {
 	}
 
 	class AdminListener implements ActionListener {
-		
-		int row,col;
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -482,10 +620,11 @@ public class StudentSystem extends JFrame implements ActionListener {
 
 			try {
 				if (o == sCreateBtn) {
+					setFieldVisibility(true);
 					sCreatePanel.setVisible(true);
 					rollNoTF.setText(Integer.toString(totalNoStu));
 				}
-				if (o == addStudent) {
+				if (o == addStudent && s.equals("Add Student")) {
 					rollNoVal = Integer.parseInt(rollNoTF.getText().trim());
 					nameVal = nameTF.getText().trim();
 					classVal = classTF.getText().trim();
@@ -498,20 +637,39 @@ public class StudentSystem extends JFrame implements ActionListener {
 					clearFields();
 					updateShowAllTable();
 				}
+				if (o == addStudent && s.equals("ok")) {
+					cancel.doClick();
+				}
+				if (o == addStudent && s.equals("update")) {
+					rollNoVal = Integer.parseInt(rollNoTF.getText().trim());
+					nameVal = nameTF.getText().trim();
+					classVal = classTF.getText().trim();
+					sectionVal = sectionTF.getText().trim();
+					phoneVal = phoneTF.getText().trim();
+					addressVal = addressTA.getText().trim();
+					String q = String.format(
+							"update student set name='%s',class='%s',section='%s',phone='%s',address='%s' where rollno=%d",
+							nameVal, classVal, sectionVal, phoneVal, addressVal, rollNoVal);
+					ResultSet rs = st.executeQuery(q);
+					clearFields();
+					cancel.doClick();
+					updateShowAllTable();
+				}
 				if (o == cancel) {
 					sCreatePanel.setVisible(false);
 					clearFields();
 				}
-				if (o == sReadBtn || o == sUpdateBtn || o == sDeleteBtn) {
-					showAllTable.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mouseReleased(final MouseEvent e) {
-							final JTable target = (JTable) e.getSource();
-							final int row = target.getSelectedRow();
-							final int column = target.getSelectedColumn();
-							updateRowCol(row,column);
-						}
-					});
+				if (o == sReadBtn) {
+					setFieldVisibility(false);
+					readRow(row);
+				}
+				if (o == sUpdateBtn) {
+					setFieldVisibility(true);
+					updateRow(row);
+				}
+				if (o == sDeleteBtn) {
+					setFieldVisibility(false);
+					deleteRow(row);
 				}
 				if (o == logout) {
 					cancel.doClick();
@@ -526,32 +684,97 @@ public class StudentSystem extends JFrame implements ActionListener {
 			showAllModel.setRowCount(0);
 			fillShowAllTable();
 		}
-		
-		private void updateRowCol(int row, int column) {
-			this.row=row;
-			this.col=column;
-		}
 
-		private void work(Object o, int row, int column) {
+		private void readRow(int row) {
 			try {
 				int rn = (int) showAllTable.getValueAt(row, 0);
 				String q = "select * from student where rollno=" + rn;
-				if (o == sReadBtn) {
-					ResultSet rs = st.executeQuery(q);
-				}
-				if (o == sUpdateBtn) {
-					
-					ResultSet rs = st.executeQuery(q);
-				}
-				if (o == sDeleteBtn) {
-					ResultSet rs = st.executeQuery("delete from student where rollno="+rn);
-					JOptionPane.showMessageDialog(null, "deleted successfully");
-					updateShowAllTable();
-				}
+				ResultSet rs = st.executeQuery(q);
+				if (rs.next())
+					readStudentPanel(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
+							rs.getString(6));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+
+		private void updateRow(int row) {
+			try {
+				int rn = (int) showAllTable.getValueAt(row, 0);
+				String q = "select * from student where rollno=" + rn;
+				ResultSet rs = st.executeQuery(q);
+				if (rs.next())
+					updateStudentPanel(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
+							rs.getString(6));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		private void deleteRow(int row) {
+			try {
+				int rn = (int) showAllTable.getValueAt(row, 0);
+				ResultSet rs = st.executeQuery("delete from student where rollno=" + rn);
+				JOptionPane.showMessageDialog(null, "deleted successfully");
+				updateShowAllTable();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		private void readStudentPanel(int r, String n, String c, String s, String p, String a) {
+			rollNoTF.setText("" + r);
+			nameTF.setText(n);
+			classTF.setText(c);
+			sectionTF.setText(s);
+			phoneTF.setText(p);
+			addressTA.setText(a);
+
+			sCreatePanel.setVisible(true);
+
+			addStudent.setText("ok");
+
+		}
+
+		private void updateStudentPanel(int r, String n, String c, String s, String p, String a) {
+			rollNoTF.setText("" + r);
+			nameTF.setText(n);
+			classTF.setText(c);
+			sectionTF.setText(s);
+			phoneTF.setText(p);
+			addressTA.setText(a);
+
+			sCreatePanel.setVisible(true);
+
+			addStudent.setText("update");
+		}
+
+	}
+
+	public class StudentListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String s=e.getActionCommand();
+			Object o=e.getSource();
+			
+			if(o==stuBioBtn) {
+				stuBioPanel.setVisible(true);
+			}
+			if(o==attendanceBtn) {
+				attendancePanel.setVisible(true);
+			}
+			if(o==timetableBtn) {
+				timetablePanel.setVisible(true);
+			}
+			if(o==marksBtn) {
+				marksPanel.setVisible(true);
+			}
+			if(o==feeBtn) {
+				feePanel.setVisible(true);
+			}
+		}
+
 	}
 
 }
