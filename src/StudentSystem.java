@@ -19,11 +19,11 @@ public class StudentSystem extends JFrame implements ActionListener {
 
 	JPanel backPanel, beginPanel, loginPanel, adminPanel, studentPanel;
 	JButton back, logout;
-	JPanel currentPanel, newPanel;
+
 	JLabel adminLabel, studentLabel;
 	JButton admin, student;
-	JLabel userLabel,pwdLabel, cpwdLabel, pwdMatch;
-	JTextField userTF; 
+	JLabel userLabel, pwdLabel, cpwdLabel, pwdMatch;
+	JTextField userTF;
 	JPasswordField pwdTF, cpwdTF;
 	JButton login, signup;
 	JPanel sCreatePanel;
@@ -34,15 +34,18 @@ public class StudentSystem extends JFrame implements ActionListener {
 	JButton addStudent, cancel;
 	JButton stuBioBtn, attendanceBtn, timetableBtn, marksBtn, feeBtn;
 	JPanel stuBioPanel, attendancePanel, timetablePanel, marksPanel, feePanel;
-	
-	ImageIcon sImgIcon; 
-	JLabel sImg,sRollNoLabel,sNameLabel,sClassLabel,sSectionLabel,sPhoneLabel,sAddressLabel;
-	JTextField sRollNoTF,sNameTF,sClassTF,sSectionTF,sPhoneTF;
+
+	ImageIcon sImgIcon;
+	JLabel sImg, sRollNoLabel, sNameLabel, sClassLabel, sSectionLabel, sPhoneLabel, sAddressLabel;
+	JTextField sRollNoTF, sNameTF, sClassTF, sSectionTF, sPhoneTF;
 	JTextArea sAddressTA;
 
 	DefaultTableModel showAllModel;
 	JTable showAllTable;
 	JScrollPane showAllSP;
+
+	JPanel c1;
+	String userId;
 
 	Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
 	int width = (int) size.getWidth();
@@ -311,66 +314,66 @@ public class StudentSystem extends JFrame implements ActionListener {
 		timetableBtn = new JButton("TimeTable");
 		marksBtn = new JButton("Marks");
 		feeBtn = new JButton("Fee");
-		
-		Border studentBorder=BorderFactory.createLineBorder(Color.BLACK);
+
+		Border studentBorder = BorderFactory.createLineBorder(Color.BLACK);
 
 		stuBioBtn.addActionListener(studentListener);
 		attendanceBtn.addActionListener(studentListener);
 		timetableBtn.addActionListener(studentListener);
 		marksBtn.addActionListener(studentListener);
 		feeBtn.addActionListener(studentListener);
-		
-		stuBioBtn.setBounds(50,100,300,100);
-		attendanceBtn.setBounds(50,200,300,100);
-		timetableBtn.setBounds(50,300,300,100);
-		marksBtn.setBounds(50,400,300,100);
-		feeBtn.setBounds(50,500,300,100);
-		
+
+		stuBioBtn.setBounds(50, 100, 300, 100);
+		attendanceBtn.setBounds(50, 200, 300, 100);
+		timetableBtn.setBounds(50, 300, 300, 100);
+		marksBtn.setBounds(50, 400, 300, 100);
+		feeBtn.setBounds(50, 500, 300, 100);
+
 		studentPanel.add(stuBioBtn);
 		studentPanel.add(attendanceBtn);
 		studentPanel.add(timetableBtn);
 		studentPanel.add(marksBtn);
 		studentPanel.add(feeBtn);
-		
-		// stuBio panel
-		stuBioPanel=new JPanel();
-		
-		sImgIcon=new ImageIcon("C:\\Users\\sanja\\OneDrive\\Pictures\\Screenshots\\wallpaper.jpg");
-		sImg=new JLabel(sImgIcon);
-		sRollNoLabel=new JLabel("Roll No :");
-		sNameLabel=new JLabel("Name :");
-		sClassLabel=new JLabel("Class");
-		sSectionLabel=new JLabel("Section");
-		sPhoneLabel=new JLabel("Phone");
-		sAddressLabel=new JLabel("Address");
-		sRollNoTF=new JTextField(20);
-		sNameTF=new JTextField(20);
-		sClassTF=new JTextField(20);
-		sSectionTF=new JTextField(20);
-		sPhoneTF=new JTextField(20);
-		sAddressTA=new JTextArea();
 
-		sImg.setBounds(850,50,100,125);
-		sRollNoLabel.setBounds(50,50,100,25);
-		sRollNoTF.setBounds(200,50,200,25);
-		sNameLabel.setBounds(50,100,100,25);
-		sNameTF.setBounds(200,100,200,25);
-		sClassLabel.setBounds(50,150,100,25);
-		sClassTF.setBounds(200,150,200,25);
-		sSectionLabel.setBounds(50,200,100,25);
-		sSectionTF.setBounds(200,200,200,25);
-		sPhoneLabel.setBounds(50,250,100,25);
-		sPhoneTF.setBounds(200,250,200,25);
-		sAddressLabel.setBounds(50,300,100,25);
-		sAddressTA.setBounds(200,300,200,100);
-		
+		// stuBio panel
+		stuBioPanel = new JPanel();
+
+		sImgIcon = new ImageIcon("C:\\Users\\sanja\\OneDrive\\Pictures\\Screenshots\\wallpaper.jpg");
+		sImg = new JLabel(sImgIcon);
+		sRollNoLabel = new JLabel("Roll No :");
+		sNameLabel = new JLabel("Name :");
+		sClassLabel = new JLabel("Class :");
+		sSectionLabel = new JLabel("Section :");
+		sPhoneLabel = new JLabel("Phone :");
+		sAddressLabel = new JLabel("Address :");
+		sRollNoTF = new JTextField(20);
+		sNameTF = new JTextField(20);
+		sClassTF = new JTextField(20);
+		sSectionTF = new JTextField(20);
+		sPhoneTF = new JTextField(20);
+		sAddressTA = new JTextArea();
+
+		sImg.setBounds(850, 50, 100, 125);
+		sRollNoLabel.setBounds(50, 50, 100, 25);
+		sRollNoTF.setBounds(200, 50, 200, 25);
+		sNameLabel.setBounds(50, 100, 100, 25);
+		sNameTF.setBounds(200, 100, 200, 25);
+		sClassLabel.setBounds(50, 150, 100, 25);
+		sClassTF.setBounds(200, 150, 200, 25);
+		sSectionLabel.setBounds(50, 200, 100, 25);
+		sSectionTF.setBounds(200, 200, 200, 25);
+		sPhoneLabel.setBounds(50, 250, 100, 25);
+		sPhoneTF.setBounds(200, 250, 200, 25);
+		sAddressLabel.setBounds(50, 300, 100, 25);
+		sAddressTA.setBounds(200, 300, 200, 100);
+
 		sRollNoTF.setEditable(false);
 		sNameTF.setEditable(false);
 		sClassTF.setEditable(false);
 		sSectionTF.setEditable(false);
 		sPhoneTF.setEditable(false);
 		sAddressTA.setEditable(false);
-		
+
 		stuBioPanel.add(sImg);
 		stuBioPanel.add(sRollNoLabel);
 		stuBioPanel.add(sNameLabel);
@@ -384,46 +387,46 @@ public class StudentSystem extends JFrame implements ActionListener {
 		stuBioPanel.add(sSectionTF);
 		stuBioPanel.add(sPhoneTF);
 		stuBioPanel.add(sAddressTA);
-		
+
 		stuBioPanel.setBorder(studentBorder);
 		stuBioPanel.setLayout(null);
-		stuBioPanel.setBounds(500,100,width-500-50,600);
+		stuBioPanel.setBounds(500, 100, width - 500 - 50, 600);
 		stuBioPanel.setVisible(true);
 		studentPanel.add(stuBioPanel);
-		
+
 		// attendance panel
-		attendancePanel=new JPanel();
-		
+		attendancePanel = new JPanel();
+
 		attendancePanel.setBorder(studentBorder);
 		attendancePanel.setLayout(null);
-		attendancePanel.setBounds(500,100,width-500-50,600);
+		attendancePanel.setBounds(500, 100, width - 500 - 50, 600);
 		attendancePanel.setVisible(false);
 		studentPanel.add(attendancePanel);
-		
+
 		// timetable panel
-		timetablePanel=new JPanel();
-		
+		timetablePanel = new JPanel();
+
 		timetablePanel.setBorder(studentBorder);
 		timetablePanel.setLayout(null);
-		timetablePanel.setBounds(500,100,width-500-50,600);
+		timetablePanel.setBounds(500, 100, width - 500 - 50, 600);
 		timetablePanel.setVisible(false);
 		studentPanel.add(timetablePanel);
-		
+
 		// marks panel
-		marksPanel=new JPanel();
-		
+		marksPanel = new JPanel();
+
 		marksPanel.setBorder(studentBorder);
 		marksPanel.setLayout(null);
-		marksPanel.setBounds(500,100,width-500-50,600);
+		marksPanel.setBounds(500, 100, width - 500 - 50, 600);
 		marksPanel.setVisible(false);
 		studentPanel.add(marksPanel);
-		
-		//fee panel
-		feePanel=new JPanel();
-		
+
+		// fee panel
+		feePanel = new JPanel();
+
 		feePanel.setBorder(studentBorder);
 		feePanel.setLayout(null);
-		feePanel.setBounds(500,100,width-500-50,600);
+		feePanel.setBounds(500, 100, width - 500 - 50, 600);
 		feePanel.setVisible(false);
 		studentPanel.add(feePanel);
 
@@ -555,6 +558,8 @@ public class StudentSystem extends JFrame implements ActionListener {
 					if (rs.next()) {
 						if (rs.getString("password").equals(pwdTF.getText().trim())) {
 							this.setVisibility(loginPanel, studentPanel);
+							userId = userTF.getText().trim();
+							studentListener.fillstuBioPanel();
 						}
 					} else {
 						JOptionPane.showMessageDialog(null, "incorrect username/password");
@@ -610,9 +615,11 @@ public class StudentSystem extends JFrame implements ActionListener {
 	class BackListener implements ActionListener {
 
 		HashMap<JPanel, JPanel> backMap = new HashMap<>();
+		JPanel currentPanel, newPanel;
 
 		public void load() {
 			backMap.put(loginPanel, beginPanel);
+			c1 = stuBioPanel;
 		}
 
 		public JPanel updateCurrentPanel(JPanel currPanel) {
@@ -773,27 +780,52 @@ public class StudentSystem extends JFrame implements ActionListener {
 	}
 
 	public class StudentListener implements ActionListener {
+		
+		public void fillstuBioPanel() {
+			try {
+				ResultSet rs = st.executeQuery("select * from student where rollno="+userId);
+				while (rs.next()) {
+					sRollNoTF.setText(""+rs.getInt(1));
+					sNameTF.setText(rs.getString(2));
+					sClassTF.setText(rs.getString(3));
+					sSectionTF.setText(rs.getString(4));
+					sPhoneTF.setText(rs.getString(5));
+					sAddressTA.setText(rs.getString(6));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			String s=e.getActionCommand();
-			Object o=e.getSource();
-			
-			if(o==stuBioBtn) {
+			String s = e.getActionCommand();
+			Object o = e.getSource();
+
+			if (o == stuBioBtn) {
+				c1.setVisible(false);
 				stuBioPanel.setVisible(true);
-				backListener.updateCurrentPanel(stuBioPanel);
+				c1 = stuBioPanel;
 			}
-			if(o==attendanceBtn) {
-				setVisibility(currentPanel,attendancePanel);
+			if (o == attendanceBtn) {
+				c1.setVisible(false);
+				attendancePanel.setVisible(true);
+				c1 = attendancePanel;
 			}
-			if(o==timetableBtn) {
-				timetablePanel
+			if (o == timetableBtn) {
+				c1.setVisible(false);
+				timetablePanel.setVisible(true);
+				c1 = timetablePanel;
 			}
-			if(o==marksBtn) {
+			if (o == marksBtn) {
+				c1.setVisible(false);
 				marksPanel.setVisible(true);
+				c1 = marksPanel;
 			}
-			if(o==feeBtn) {
+			if (o == feeBtn) {
+				c1.setVisible(false);
 				feePanel.setVisible(true);
+				c1 = feePanel;
 			}
 		}
 
