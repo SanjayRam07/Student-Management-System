@@ -40,9 +40,9 @@ public class StudentSystem extends JFrame implements ActionListener {
 	JTextField sRollNoTF, sNameTF, sClassTF, sSectionTF, sPhoneTF;
 	JTextArea sAddressTA;
 
-	DefaultTableModel showAllModel;
-	JTable showAllTable;
-	JScrollPane showAllSP;
+	DefaultTableModel showAllModel, timetableModel, marksModel, feeModel;
+	JTable showAllTable, timetableTable, marksTable, feeTable;
+	JScrollPane showAllSP, timetableSP, marksSP, feeSP;
 
 	JPanel c1;
 	String userId;
@@ -56,6 +56,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 	int row, col;
 
 	BackListener backListener;
+	LogoutListener logoutListener;
 	AdminListener adminListener;
 	StudentListener studentListener;
 
@@ -73,6 +74,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 		System.out.println(width + " " + height);
 
 		backListener = new BackListener();
+		logoutListener=new LogoutListener();
 		adminListener = new AdminListener();
 		studentListener = new StudentListener();
 
@@ -86,7 +88,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 		backPanel.add(back);
 
 		logout = new JButton("logout");
-		logout.addActionListener(adminListener);
+		logout.addActionListener(logoutListener);
 		logout.setVisible(false);
 		logout.setBounds(width - 105, 5, 100, 30);
 		backPanel.add(logout);
@@ -269,7 +271,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 
 		rollNoTF.setEditable(false);
 		addStudent.addActionListener(adminListener);
-		cancel.addActionListener(adminListener);
+		cancel.addActionListener(this);
 
 		rollNoLabel.setBounds(50, 50, 100, 25);
 		rollNoTF.setBounds(200, 50, 200, 25);
@@ -406,6 +408,27 @@ public class StudentSystem extends JFrame implements ActionListener {
 		// timetable panel
 		timetablePanel = new JPanel();
 
+		timetableModel = new DefaultTableModel() {
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+		timetableModel.addColumn("Day");
+		timetableModel.addColumn("P1");
+		timetableModel.addColumn("P2");
+		timetableModel.addColumn("P3");
+		timetableModel.addColumn("P4");
+		timetableModel.addColumn("P5");
+		timetableModel.addColumn("P6");
+		timetableModel.addColumn("P7");
+		timetableModel.addColumn("P8");
+		timetableTable = new JTable(timetableModel);
+		timetableSP = new JScrollPane(timetableTable);
+
+		timetableSP.setBounds(25, 100, width - 600, 200);
+
+		timetablePanel.add(timetableSP);
+
 		timetablePanel.setBorder(studentBorder);
 		timetablePanel.setLayout(null);
 		timetablePanel.setBounds(500, 100, width - 500 - 50, 600);
@@ -415,6 +438,20 @@ public class StudentSystem extends JFrame implements ActionListener {
 		// marks panel
 		marksPanel = new JPanel();
 
+		marksModel = new DefaultTableModel() {
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+		marksModel.addColumn("Subject");
+		marksModel.addColumn("Marks");
+		marksTable = new JTable(marksModel);
+		marksSP = new JScrollPane(marksTable);
+
+		marksSP.setBounds(25, 100, width - 600, 200);
+
+		marksPanel.add(marksSP);
+
 		marksPanel.setBorder(studentBorder);
 		marksPanel.setLayout(null);
 		marksPanel.setBounds(500, 100, width - 500 - 50, 600);
@@ -423,6 +460,19 @@ public class StudentSystem extends JFrame implements ActionListener {
 
 		// fee panel
 		feePanel = new JPanel();
+
+		feeModel = new DefaultTableModel() {
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+		feeModel.addColumn("fee");
+		feeModel.addColumn("Paid");
+		feeTable = new JTable(feeModel);
+
+		feeTable.setBounds(25, 100, width - 600, 200);
+
+		feePanel.add(feeTable);
 
 		feePanel.setBorder(studentBorder);
 		feePanel.setLayout(null);
@@ -497,16 +547,6 @@ public class StudentSystem extends JFrame implements ActionListener {
 		}
 	}
 
-	private void clearFields() {
-		// TODO Auto-generated method stub
-		rollNoTF.setText("");
-		nameTF.setText("");
-		classTF.setText("");
-		sectionTF.setText("");
-		phoneTF.setText("");
-		addressTA.setText("");
-	}
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
@@ -529,12 +569,20 @@ public class StudentSystem extends JFrame implements ActionListener {
 			login.setText("Signup");
 			signup.setText("Login");
 			clearLogin();
+			if(currentUser==2) {
+				userTF.setEditable(false);
+				calcTotalNoStu();
+				userTF.setText(Integer.toString(totalNoStu));
+			}
 		}
 		if (o == signup && s.equals("Login")) {
 			cpwdLabel.setVisible(false);
 			cpwdTF.setVisible(false);
 			login.setText("Login");
 			signup.setText("Signup");
+			userTF.setText("");
+			userTF.setEditable(true);
+			pwdMatch.setText("");
 			clearLogin();
 		}
 
@@ -581,20 +629,38 @@ public class StudentSystem extends JFrame implements ActionListener {
 				st = con.createStatement();
 				if (currentUser == 0) {
 					st.executeUpdate("insert into adminlogin values('" + user + "','" + pwd + "')");
+					JOptionPane.showMessageDialog(this, "Signedup successfully!");
+					logout.doClick();
 				} else if (currentUser == 2) {
 					st.executeUpdate("insert into studentlogin values('" + user + "','" + pwd + "')");
+					st.executeUpdate("insert into student values(" + user + ",null,null,null,null,null)");
+					JOptionPane.showMessageDialog(this, "Signedup successfully!");
+					logout.doClick();
+				}
+				else {
+					JOptionPane.showMessageDialog(this, "Signup Unsuccessful!");
 				}
 				cpwdLabel.setVisible(false);
 				cpwdTF.setVisible(false);
+				userTF.setEditable(true);
 				userTF.setText("");
 				pwdTF.setText("");
 				login.setText("Login");
 				signup.setText("Signup");
 				pwdMatch.setVisible(false);
+				logout.doClick();
 				clearLogin();
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
+		}
+		if (o == cancel) {
+			if (currentUser == 0) {
+				sCreatePanel.setVisible(false);
+				adminListener.clearAdminFields();
+			}
+			else
+				System.out.println("cancel");
 		}
 	}
 
@@ -610,6 +676,21 @@ public class StudentSystem extends JFrame implements ActionListener {
 		sectionTF.setEditable(b);
 		phoneTF.setEditable(b);
 		addressTA.setEditable(b);
+	}
+
+	class LogoutListener implements ActionListener {
+
+		public void actionPerformed(ActionEvent e) {
+			if (currentUser == 0) {
+				cancel.doClick();
+				setVisibility(adminPanel, beginPanel);
+			} else if (currentUser == 2) {
+				cancel.doClick();
+				setVisibility(studentPanel, beginPanel);
+			}
+			signup.setVisible(false);
+		}
+
 	}
 
 	class BackListener implements ActionListener {
@@ -661,8 +742,9 @@ public class StudentSystem extends JFrame implements ActionListener {
 					addressVal = addressTA.getText().trim();
 					String q = String.format("insert into student values (%d,'%s','%s','%s','%s','%s')", rollNoVal,
 							nameVal, classVal, sectionVal, phoneVal, addressVal);
+					st.executeUpdate("insert into studentlogin values('" + rollNoTF.getText() + "','123')");
 					ResultSet rs = st.executeQuery(q);
-					clearFields();
+					clearAdminFields();
 					updateShowAllTable();
 				}
 				if (o == addStudent && s.equals("ok")) {
@@ -679,13 +761,9 @@ public class StudentSystem extends JFrame implements ActionListener {
 							"update student set name='%s',class='%s',section='%s',phone='%s',address='%s' where rollno=%d",
 							nameVal, classVal, sectionVal, phoneVal, addressVal, rollNoVal);
 					ResultSet rs = st.executeQuery(q);
-					clearFields();
+					clearAdminFields();
 					cancel.doClick();
 					updateShowAllTable();
-				}
-				if (o == cancel) {
-					sCreatePanel.setVisible(false);
-					clearFields();
 				}
 				if (o == sReadBtn) {
 					setFieldVisibility(false);
@@ -699,13 +777,19 @@ public class StudentSystem extends JFrame implements ActionListener {
 					setFieldVisibility(false);
 					deleteRow(row);
 				}
-				if (o == logout) {
-					cancel.doClick();
-					setVisibility(adminPanel, beginPanel);
-				}
 			} catch (Exception e2) {
 				e2.printStackTrace();
 			}
+		}
+
+		private void clearAdminFields() {
+			// TODO Auto-generated method stub
+			rollNoTF.setText("");
+			nameTF.setText("");
+			classTF.setText("");
+			sectionTF.setText("");
+			phoneTF.setText("");
+			addressTA.setText("");
 		}
 
 		private void updateShowAllTable() {
@@ -780,12 +864,16 @@ public class StudentSystem extends JFrame implements ActionListener {
 	}
 
 	public class StudentListener implements ActionListener {
-		
+
+		boolean tb = false, mb = false, fb = false;
+		String[] days = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" };
+		int i = 0;
+
 		public void fillstuBioPanel() {
 			try {
-				ResultSet rs = st.executeQuery("select * from student where rollno="+userId);
+				ResultSet rs = st.executeQuery("select * from student where rollno=" + userId);
 				while (rs.next()) {
-					sRollNoTF.setText(""+rs.getInt(1));
+					sRollNoTF.setText("" + rs.getInt(1));
 					sNameTF.setText(rs.getString(2));
 					sClassTF.setText(rs.getString(3));
 					sSectionTF.setText(rs.getString(4));
@@ -795,6 +883,18 @@ public class StudentSystem extends JFrame implements ActionListener {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+
+		public void clearStudentFields() {
+			sRollNoTF.setText("");
+			sNameTF.setText("");
+			sClassTF.setText("");
+			sSectionTF.setText("");
+			sPhoneTF.setText("");
+			sAddressTA.setText("");
+			((DefaultTableModel) timetableTable.getModel()).setRowCount(0);
+			((DefaultTableModel) marksTable.getModel()).setRowCount(0);
+			((DefaultTableModel) feeTable.getModel()).setRowCount(0);
 		}
 
 		@Override
@@ -814,16 +914,60 @@ public class StudentSystem extends JFrame implements ActionListener {
 			}
 			if (o == timetableBtn) {
 				c1.setVisible(false);
+
+				if (!tb)
+					try {
+						ResultSet rs = st.executeQuery("select * from timetable");
+						while (rs.next()) {
+							timetableModel.addRow(new Object[] { days[i], rs.getString(1), rs.getString(2),
+									rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7),
+									rs.getString(8) });
+							i++;
+						}
+						tb = true;
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+
 				timetablePanel.setVisible(true);
 				c1 = timetablePanel;
 			}
 			if (o == marksBtn) {
 				c1.setVisible(false);
+
+				if (!mb)
+					try {
+						ResultSet rs = st.executeQuery("select * from marks where rollno=" + userId);
+						while (rs.next()) {
+							marksModel.addRow(new Object[] { "Tamil", rs.getString(2) });
+							marksModel.addRow(new Object[] { "English", rs.getString(3) });
+							marksModel.addRow(new Object[] { "Maths", rs.getString(4) });
+							marksModel.addRow(new Object[] { "Science", rs.getString(5) });
+							marksModel.addRow(new Object[] { "Social", rs.getString(6) });
+						}
+						mb = true;
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+
 				marksPanel.setVisible(true);
 				c1 = marksPanel;
 			}
 			if (o == feeBtn) {
 				c1.setVisible(false);
+
+				if (!fb)
+					try {
+						ResultSet rs = st.executeQuery("select * from fee where rollno=" + userId);
+						while (rs.next()) {
+							feeModel.addRow(new Object[] { "Paid", rs.getInt(2) });
+							feeModel.addRow(new Object[] { "Due", rs.getInt(3) });
+						}
+						fb = true;
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+
 				feePanel.setVisible(true);
 				c1 = feePanel;
 			}
