@@ -1,5 +1,7 @@
 import java.util.*;
 import java.sql.*;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -14,6 +16,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 	}
 
 	Connection con;
+	DatabaseMetaData dbmd;
 	PreparedStatement pst;
 	Statement st;
 
@@ -27,27 +30,30 @@ public class StudentSystem extends JFrame implements ActionListener {
 	JPasswordField pwdTF, cpwdTF;
 	JButton login, signup;
 	JPanel sCreatePanel;
-	JButton sCreateBtn, sReadBtn, sUpdateBtn, sDeleteBtn;
+	JButton sCreateBtn, sReadBtn, sUpdateBtn, sDeleteBtn, sCreateAtdTable;
 	JLabel rollNoLabel, nameLabel, classLabel, sectionLabel, phoneLabel, addressLabel;
 	JTextField rollNoTF, nameTF, classTF, sectionTF, phoneTF;
 	JTextArea addressTA;
 	JButton addStudent, cancel;
 	JButton stuBioBtn, attendanceBtn, timetableBtn, marksBtn, feeBtn;
 	JPanel stuBioPanel, attendancePanel, timetablePanel, marksPanel, feePanel;
+	JButton markAttendance;
 
 	ImageIcon sImgIcon;
 	JLabel sImg, sRollNoLabel, sNameLabel, sClassLabel, sSectionLabel, sPhoneLabel, sAddressLabel;
 	JTextField sRollNoTF, sNameTF, sClassTF, sSectionTF, sPhoneTF;
 	JTextArea sAddressTA;
 
-	DefaultTableModel showAllModel, timetableModel, marksModel, feeModel;
-	JTable showAllTable, timetableTable, marksTable, feeTable;
-	JScrollPane showAllSP, timetableSP, marksSP, feeSP;
+	DefaultTableModel showAllModel, attendanceModel, timetableModel, marksModel, feeModel;
+	JTable showAllTable, attendanceTable, timetableTable, marksTable, feeTable;
+	JScrollPane showAllSP, attendanceSP, timetableSP, marksSP, feeSP;
 
 	JPanel c1;
 	String userId;
 
 	Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+	Calendar cal = Calendar.getInstance();
+
 	int width = (int) size.getWidth();
 	int height = (int) size.getHeight();
 	int totalNoStu = 1;
@@ -74,7 +80,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 		System.out.println(width + " " + height);
 
 		backListener = new BackListener();
-		logoutListener=new LogoutListener();
+		logoutListener = new LogoutListener();
 		adminListener = new AdminListener();
 		studentListener = new StudentListener();
 
@@ -209,6 +215,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 		sReadBtn = new JButton("Read Details");
 		sUpdateBtn = new JButton("update Student");
 		sDeleteBtn = new JButton("Delete Student");
+		sCreateAtdTable = new JButton("Create attendance");
 
 		showAllModel = new DefaultTableModel() {
 			public boolean isCellEditable(int row, int column) {
@@ -233,18 +240,21 @@ public class StudentSystem extends JFrame implements ActionListener {
 		sReadBtn.addActionListener(adminListener);
 		sUpdateBtn.addActionListener(adminListener);
 		sDeleteBtn.addActionListener(adminListener);
+		sCreateAtdTable.addActionListener(adminListener);
 
 		showAllSP.setBounds(100, 100, 300, 600);
 		sCreateBtn.setBounds(450, 100, 150, 25);
 		sReadBtn.setBounds(450, 150, 150, 25);
 		sUpdateBtn.setBounds(450, 200, 150, 25);
 		sDeleteBtn.setBounds(450, 250, 150, 25);
+		sCreateAtdTable.setBounds(450, 300, 150, 25);
 
 		adminPanel.add(showAllSP);
 		adminPanel.add(sCreateBtn);
 		adminPanel.add(sReadBtn);
 		adminPanel.add(sUpdateBtn);
 		adminPanel.add(sDeleteBtn);
+		adminPanel.add(sCreateAtdTable);
 
 		adminPanel.setLayout(null);
 		adminPanel.setSize(width, height);
@@ -376,7 +386,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 		sPhoneTF.setEditable(false);
 		sAddressTA.setEditable(false);
 
-		stuBioPanel.add(sImg);
+		// stuBioPanel.add(sImg);
 		stuBioPanel.add(sRollNoLabel);
 		stuBioPanel.add(sNameLabel);
 		stuBioPanel.add(sClassLabel);
@@ -398,6 +408,27 @@ public class StudentSystem extends JFrame implements ActionListener {
 
 		// attendance panel
 		attendancePanel = new JPanel();
+
+		markAttendance = new JButton("present");
+
+		attendanceModel = new DefaultTableModel() {
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+		attendanceModel.addColumn("Dates");
+		attendanceModel.addColumn("Status");
+		attendanceTable = new JTable(attendanceModel);
+		attendanceSP = new JScrollPane(attendanceTable);
+
+		attendanceSP.setBounds(25, 100, width - 600, 200);
+
+		markAttendance.addActionListener(studentListener);
+
+		markAttendance.setBounds(10, 10, 100, 25);
+
+		attendancePanel.add(attendanceSP);
+		attendancePanel.add(markAttendance);
 
 		attendancePanel.setBorder(studentBorder);
 		attendancePanel.setLayout(null);
@@ -497,20 +528,8 @@ public class StudentSystem extends JFrame implements ActionListener {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			String url = "jdbc:oracle:thin:@localhost:1521:XE";
 			con = DriverManager.getConnection(url, "sanjay", "2001");
+			dbmd = con.getMetaData();
 			st = con.createStatement();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void fillShowAllTable() {
-		try {
-			ResultSet rs = st.executeQuery("select rollno,name from student");
-			while (rs.next()) {
-				int rollno = rs.getInt(1);
-				String name = rs.getString(2);
-				showAllModel.addRow(new Object[] { rollno, name });
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -547,6 +566,24 @@ public class StudentSystem extends JFrame implements ActionListener {
 		}
 	}
 
+	private void fillShowAllTable() {
+		try {
+			ResultSet rs = st.executeQuery("select rollno,name from student order by rollno");
+			while (rs.next()) {
+				int rollno = rs.getInt(1);
+				String name = rs.getString(2);
+				showAllModel.addRow(new Object[] { rollno, name });
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void updateShowAllTable() {
+		showAllModel.setRowCount(0);
+		fillShowAllTable();
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
@@ -556,10 +593,13 @@ public class StudentSystem extends JFrame implements ActionListener {
 		// current user : 0-admin 2-student
 		if (o == admin) {
 			currentUser = 0;
+			LoginVisibility(true);
 			this.setVisibility(beginPanel, loginPanel);
+			LoginVisibility(true);
 		}
 		if (o == student) {
 			currentUser = 2;
+			LoginVisibility(true);
 			this.setVisibility(beginPanel, loginPanel);
 		}
 
@@ -569,7 +609,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 			login.setText("Signup");
 			signup.setText("Login");
 			clearLogin();
-			if(currentUser==2) {
+			if (currentUser == 2) {
 				userTF.setEditable(false);
 				calcTotalNoStu();
 				userTF.setText(Integer.toString(totalNoStu));
@@ -594,7 +634,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 					if (rs.next()) {
 						if (rs.getString(1).equals(pwdTF.getText().trim())) {
 							this.setVisibility(loginPanel, adminPanel);
-							fillShowAllTable();
+							updateShowAllTable();
 						}
 					} else {
 						JOptionPane.showMessageDialog(null, "incorrect username/password");
@@ -608,6 +648,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 							this.setVisibility(loginPanel, studentPanel);
 							userId = userTF.getText().trim();
 							studentListener.fillstuBioPanel();
+							stuBioBtn.doClick();
 						}
 					} else {
 						JOptionPane.showMessageDialog(null, "incorrect username/password");
@@ -632,12 +673,12 @@ public class StudentSystem extends JFrame implements ActionListener {
 					JOptionPane.showMessageDialog(this, "Signedup successfully!");
 					logout.doClick();
 				} else if (currentUser == 2) {
-					st.executeUpdate("insert into studentlogin values('" + user + "','" + pwd + "')");
+					st.executeUpdate("insert into studentlogin values('" + user + "','123')");
 					st.executeUpdate("insert into student values(" + user + ",null,null,null,null,null)");
+					createAttendanceTable(Integer.parseInt(user));
 					JOptionPane.showMessageDialog(this, "Signedup successfully!");
 					logout.doClick();
-				}
-				else {
+				} else {
 					JOptionPane.showMessageDialog(this, "Signup Unsuccessful!");
 				}
 				cpwdLabel.setVisible(false);
@@ -658,8 +699,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 			if (currentUser == 0) {
 				sCreatePanel.setVisible(false);
 				adminListener.clearAdminFields();
-			}
-			else
+			} else
 				System.out.println("cancel");
 		}
 	}
@@ -668,6 +708,15 @@ public class StudentSystem extends JFrame implements ActionListener {
 		userTF.setText("");
 		pwdTF.setText("");
 		cpwdTF.setText("");
+	}
+
+	private void LoginVisibility(boolean b) {
+		userLabel.setVisible(b);
+		userTF.setVisible(b);
+		pwdLabel.setVisible(b);
+		pwdTF.setVisible(b);
+		login.setVisible(b);
+		signup.setVisible(b);
 	}
 
 	private void setFieldVisibility(boolean b) {
@@ -683,12 +732,13 @@ public class StudentSystem extends JFrame implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if (currentUser == 0) {
 				cancel.doClick();
+				LoginVisibility(false);
 				setVisibility(adminPanel, beginPanel);
 			} else if (currentUser == 2) {
 				cancel.doClick();
+				LoginVisibility(false);
 				setVisibility(studentPanel, beginPanel);
 			}
-			signup.setVisible(false);
 		}
 
 	}
@@ -710,11 +760,33 @@ public class StudentSystem extends JFrame implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			LoginVisibility(false);
 			newPanel = backMap.get(currentPanel);
 			updateCurrentPanel(newPanel);
 			setVisibility(currentPanel, newPanel);
+			clearLogin();
 		}
 
+	}
+
+	private void createAttendanceTable(int n) {
+		try {
+			ResultSet rs = dbmd.getTables(null, null, "atd" + n, null);
+			if (!rs.next()) {
+				st.executeQuery("create table atd" + n + " (dates date,status varchar(1))");
+				st.executeQuery("insert into atd" + n + " values('12-dec-12','x')");
+				JOptionPane.showMessageDialog(this, "Attendance created");
+			} else {
+				JOptionPane.showMessageDialog(this, "Attendance exists");
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this, "Attendance exists");
+			try {
+				st.executeQuery("delete * from atd"+n+" where staus!='x'");
+			} catch (Exception e1) {
+				
+			}
+		}
 	}
 
 	class AdminListener implements ActionListener {
@@ -744,6 +816,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 							nameVal, classVal, sectionVal, phoneVal, addressVal);
 					st.executeUpdate("insert into studentlogin values('" + rollNoTF.getText() + "','123')");
 					ResultSet rs = st.executeQuery(q);
+					createAttendanceTable(rollNoVal);
 					clearAdminFields();
 					updateShowAllTable();
 				}
@@ -777,6 +850,10 @@ public class StudentSystem extends JFrame implements ActionListener {
 					setFieldVisibility(false);
 					deleteRow(row);
 				}
+				if (o == sCreateAtdTable) {
+					int rollNo = (int) showAllTable.getValueAt(row, 0);
+					createAttendanceTable(rollNo);
+				}
 			} catch (Exception e2) {
 				e2.printStackTrace();
 			}
@@ -790,11 +867,6 @@ public class StudentSystem extends JFrame implements ActionListener {
 			sectionTF.setText("");
 			phoneTF.setText("");
 			addressTA.setText("");
-		}
-
-		private void updateShowAllTable() {
-			showAllModel.setRowCount(0);
-			fillShowAllTable();
 		}
 
 		private void readRow(int row) {
@@ -826,7 +898,8 @@ public class StudentSystem extends JFrame implements ActionListener {
 		private void deleteRow(int row) {
 			try {
 				int rn = (int) showAllTable.getValueAt(row, 0);
-				ResultSet rs = st.executeQuery("delete from student where rollno=" + rn);
+				ResultSet rs1 = st.executeQuery("delete from student where rollno=" + rn);
+				ResultSet rs2 = st.executeQuery("drop table atd" + rn);
 				JOptionPane.showMessageDialog(null, "deleted successfully");
 				updateShowAllTable();
 			} catch (Exception e) {
@@ -863,9 +936,23 @@ public class StudentSystem extends JFrame implements ActionListener {
 
 	}
 
+	private void checkAttendance(int userId) {
+		String df = new SimpleDateFormat("dd-MMM-yy").format(cal.getTime());
+		try {
+			ResultSet rs = st.executeQuery("select * from atd" + userId + " where dates='" + df + "'");
+			if (rs.next()) {
+				markAttendance.setVisible(false);
+			} else {
+				markAttendance.setVisible(true);
+			}
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+	}
+
 	public class StudentListener implements ActionListener {
 
-		boolean tb = false, mb = false, fb = false;
+		boolean ab = false, tb = false, mb = false, fb = false;
 		String[] days = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" };
 		int i = 0;
 
@@ -879,6 +966,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 					sSectionTF.setText(rs.getString(4));
 					sPhoneTF.setText(rs.getString(5));
 					sAddressTA.setText(rs.getString(6));
+					checkAttendance(rs.getInt(1));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -892,6 +980,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 			sSectionTF.setText("");
 			sPhoneTF.setText("");
 			sAddressTA.setText("");
+			((DefaultTableModel) attendanceTable.getModel()).setRowCount(0);
 			((DefaultTableModel) timetableTable.getModel()).setRowCount(0);
 			((DefaultTableModel) marksTable.getModel()).setRowCount(0);
 			((DefaultTableModel) feeTable.getModel()).setRowCount(0);
@@ -909,8 +998,32 @@ public class StudentSystem extends JFrame implements ActionListener {
 			}
 			if (o == attendanceBtn) {
 				c1.setVisible(false);
+				if (!ab)
+					try {
+						ResultSet rs = st.executeQuery("select * from atd" + userId + " where status!='x'");
+						while (rs.next()) {
+							Date date = rs.getDate(1);
+							String status = rs.getString(2);
+							attendanceModel.addRow(new Object[] { date.toString(), status });
+						}
+						ab=true;
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+
 				attendancePanel.setVisible(true);
 				c1 = attendancePanel;
+			}
+			if (o == markAttendance) {
+				String df = new SimpleDateFormat("dd-MMM-yy").format(cal.getTime());
+				try {
+					ResultSet rs = st.executeQuery("insert into atd" + userId + " values('" + df + "','p')");
+					markAttendance.setVisible(false);
+					ab=false;
+					attendanceBtn.doClick();
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
 			}
 			if (o == timetableBtn) {
 				c1.setVisible(false);
