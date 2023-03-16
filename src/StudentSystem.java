@@ -31,8 +31,8 @@ public class StudentSystem extends JFrame implements ActionListener {
 	JButton login, signup;
 	JPanel sCreatePanel;
 	JButton sCreateBtn, sReadBtn, sUpdateBtn, sDeleteBtn, sCreateAtdTable;
-	JLabel rollNoLabel, nameLabel, classLabel, sectionLabel, phoneLabel, addressLabel;
-	JTextField rollNoTF, nameTF, classTF, sectionTF, phoneTF;
+	JLabel rollNoLabel, nameLabel, classLabel, sectionLabel, phoneLabel, addressLabel,totalLabel;
+	JTextField rollNoTF, nameTF, classTF, sectionTF, phoneTF,totalTF;
 	JTextArea addressTA;
 	JButton addStudent, cancel;
 	JButton stuBioBtn, attendanceBtn, timetableBtn, marksBtn, feeBtn;
@@ -468,6 +468,8 @@ public class StudentSystem extends JFrame implements ActionListener {
 
 		// marks panel
 		marksPanel = new JPanel();
+		totalLabel=new JLabel("Total");
+		totalTF=new JTextField(10);
 
 		marksModel = new DefaultTableModel() {
 			public boolean isCellEditable(int row, int column) {
@@ -480,8 +482,13 @@ public class StudentSystem extends JFrame implements ActionListener {
 		marksSP = new JScrollPane(marksTable);
 
 		marksSP.setBounds(25, 100, width - 600, 200);
+		totalLabel.setBounds(450,350,150,25);
+		totalTF.setBounds(500,350,150,25);
+		totalTF.setEditable(false);
 
 		marksPanel.add(marksSP);
+		marksPanel.add(totalLabel);
+		marksPanel.add(totalTF);		
 
 		marksPanel.setBorder(studentBorder);
 		marksPanel.setLayout(null);
@@ -699,8 +706,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 			if (currentUser == 0) {
 				sCreatePanel.setVisible(false);
 				adminListener.clearAdminFields();
-			} else
-				System.out.println("cancel");
+			}
 		}
 	}
 
@@ -735,7 +741,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 				LoginVisibility(false);
 				setVisibility(adminPanel, beginPanel);
 			} else if (currentUser == 2) {
-				cancel.doClick();
+				studentListener.clearStudentFields();
 				LoginVisibility(false);
 				setVisibility(studentPanel, beginPanel);
 			}
@@ -782,9 +788,9 @@ public class StudentSystem extends JFrame implements ActionListener {
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(this, "Attendance exists");
 			try {
-				st.executeQuery("delete * from atd"+n+" where staus!='x'");
+				st.executeQuery("delete * from atd" + n + " where staus!='x'");
 			} catch (Exception e1) {
-				
+
 			}
 		}
 	}
@@ -851,8 +857,11 @@ public class StudentSystem extends JFrame implements ActionListener {
 					deleteRow(row);
 				}
 				if (o == sCreateAtdTable) {
-					int rollNo = (int) showAllTable.getValueAt(row, 0);
-					createAttendanceTable(rollNo);
+					try {
+						int rollNo = (int) showAllTable.getValueAt(row, 0);
+						createAttendanceTable(rollNo);
+					} catch (Exception e1) {
+					}
 				}
 			} catch (Exception e2) {
 				e2.printStackTrace();
@@ -901,6 +910,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 				ResultSet rs1 = st.executeQuery("delete from student where rollno=" + rn);
 				ResultSet rs2 = st.executeQuery("drop table atd" + rn);
 				JOptionPane.showMessageDialog(null, "deleted successfully");
+				cancel.doClick();
 				updateShowAllTable();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -939,6 +949,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 	private void checkAttendance(int userId) {
 		String df = new SimpleDateFormat("dd-MMM-yy").format(cal.getTime());
 		try {
+
 			ResultSet rs = st.executeQuery("select * from atd" + userId + " where dates='" + df + "'");
 			if (rs.next()) {
 				markAttendance.setVisible(false);
@@ -966,7 +977,7 @@ public class StudentSystem extends JFrame implements ActionListener {
 					sSectionTF.setText(rs.getString(4));
 					sPhoneTF.setText(rs.getString(5));
 					sAddressTA.setText(rs.getString(6));
-					checkAttendance(rs.getInt(1));
+					checkAttendance(Integer.parseInt(userId));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -974,12 +985,17 @@ public class StudentSystem extends JFrame implements ActionListener {
 		}
 
 		public void clearStudentFields() {
+			ab = false;
+			tb = false;
+			mb = false;
+			fb = false;
 			sRollNoTF.setText("");
 			sNameTF.setText("");
 			sClassTF.setText("");
 			sSectionTF.setText("");
 			sPhoneTF.setText("");
 			sAddressTA.setText("");
+			totalTF.setText("");
 			((DefaultTableModel) attendanceTable.getModel()).setRowCount(0);
 			((DefaultTableModel) timetableTable.getModel()).setRowCount(0);
 			((DefaultTableModel) marksTable.getModel()).setRowCount(0);
@@ -1000,17 +1016,17 @@ public class StudentSystem extends JFrame implements ActionListener {
 				c1.setVisible(false);
 				if (!ab)
 					try {
+
 						ResultSet rs = st.executeQuery("select * from atd" + userId + " where status!='x'");
 						while (rs.next()) {
 							Date date = rs.getDate(1);
 							String status = rs.getString(2);
 							attendanceModel.addRow(new Object[] { date.toString(), status });
 						}
-						ab=true;
+						ab = true;
 					} catch (Exception e1) {
 						e1.printStackTrace();
 					}
-
 				attendancePanel.setVisible(true);
 				c1 = attendancePanel;
 			}
@@ -1019,7 +1035,8 @@ public class StudentSystem extends JFrame implements ActionListener {
 				try {
 					ResultSet rs = st.executeQuery("insert into atd" + userId + " values('" + df + "','p')");
 					markAttendance.setVisible(false);
-					ab=false;
+					attendanceModel.setRowCount(0);
+					ab = false;
 					attendanceBtn.doClick();
 				} catch (Exception e1) {
 					e1.printStackTrace();
@@ -1052,11 +1069,18 @@ public class StudentSystem extends JFrame implements ActionListener {
 					try {
 						ResultSet rs = st.executeQuery("select * from marks where rollno=" + userId);
 						while (rs.next()) {
-							marksModel.addRow(new Object[] { "Tamil", rs.getString(2) });
-							marksModel.addRow(new Object[] { "English", rs.getString(3) });
-							marksModel.addRow(new Object[] { "Maths", rs.getString(4) });
-							marksModel.addRow(new Object[] { "Science", rs.getString(5) });
-							marksModel.addRow(new Object[] { "Social", rs.getString(6) });
+							String t=rs.getString(2);
+							String en=rs.getString(3);
+							String m=rs.getString(4);
+							String sc=rs.getString(5);
+							String soc=rs.getString(6);
+							marksModel.addRow(new Object[] { "Tamil", t });
+							marksModel.addRow(new Object[] { "English", en });
+							marksModel.addRow(new Object[] { "Maths", m });
+							marksModel.addRow(new Object[] { "Science", sc });
+							marksModel.addRow(new Object[] { "Social", soc });
+							int tot=Integer.parseInt(t)+Integer.parseInt(en)+Integer.parseInt(m)+Integer.parseInt(sc)+Integer.parseInt(soc);
+							totalTF.setText(Integer.toString(tot));
 						}
 						mb = true;
 					} catch (Exception e1) {
